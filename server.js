@@ -28,8 +28,19 @@ app.use(globalError);
 
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => {
+const server =app.listen(port, () => {
   console.log(`🚀 Example app listening on port ${port}`);
 });
 
 
+//  Handle unhandled promise rejections 
+process.on('unhandledRejection', (err) => {
+  console.error(`UnhandledRejection Errors: ${err.name} | ${err.message}`);
+  server.close(() => {
+    console.log(`server shutting Down`)
+    process.exit(1);
+
+  });
+});
+
+//  Handle uncaught exceptions

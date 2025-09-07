@@ -4,9 +4,6 @@ const dbConnection  = () =>{
       .then((connect) => {
         console.log(`✅ Database connected successfully to ${ connect.connection.host }`);
       })
-      .catch(err => {
-        console.error('❌ Database connection error:', err);
-        process.exit(1);
-      });
+
 }
 module.exports = dbConnection;
