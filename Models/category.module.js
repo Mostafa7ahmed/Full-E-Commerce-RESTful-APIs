@@ -13,6 +13,8 @@ const categorySchema = new mongoose.Schema({
     unique: true
 
   },
+
+   
   image: String 
 
 } , { timestamps: true });

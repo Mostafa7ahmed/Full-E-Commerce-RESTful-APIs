@@ -62,7 +62,7 @@ const getCategory = asyncHandler(async (req, res) => {
  const updateCategory = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { name } = req.body;
-  const category = await categoryModel.findOneAndDelete(
+  const category = await categoryModel.findByIdAndUpdate(
     {_id:id}, 
     {name, slug: name.replace(/\s+/g, "-").toLowerCase(),}, 
     { new: true }
@@ -82,21 +82,22 @@ const getCategory = asyncHandler(async (req, res) => {
  });
 
 // Delete Category  admin only
-  // const deleteCategory = asyncHandler(async (req, res) => {
-  // const { id } = req.params;
-  // const category = await categoryModel.findByIdAndDelete(id);
-  // if (!category) {
-  //   res.status(404).json({
-  //     status: "fail",
-  //     message: "Category not found",
-  //   });
-  // }
-  //   res.status(200).json({
-  //   status: "success",
-  //   message: "Category deleted successfully",
-  //   data: category});
+  const deleteCategory = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const category = await categoryModel.findByIdAndDelete(id);
+  if (!category) {
+    res.status(404).json({
+      status: "fail",
+      message: "Category not found",
+    });
+  }
+    res.status(200).json({
+    status: "success",
+    message: "Category deleted successfully",
+    data: category
+    });
   
-  // });
+  });
 
 
 module.exports = {
@@ -104,5 +105,5 @@ module.exports = {
   createCategory,
   getCategory,
   updateCategory,
-  // deleteCategory
+  deleteCategory
 };
