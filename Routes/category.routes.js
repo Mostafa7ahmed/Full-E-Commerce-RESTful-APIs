@@ -6,7 +6,6 @@ const { getCategoryValidator, updateCategoryValidator, deleteCategoryValidator, 
 router.route('/')
   .get(getCategories)
   .post(createCategoryValidator ,createCategory)
-
 router.route('/:id')
   .get(getCategoryValidator,getCategory)
   .put(updateCategoryValidator , updateCategory)

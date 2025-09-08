@@ -2,7 +2,9 @@ const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 const dbConnection  = require('./config/database');
+
 const categoryRoutes = require('./Routes/category.routes');
+const subcategoryRoutes = require('./Routes/subCategory.routes');
 dotenv.config({ path: './config.env' });
 const apiErrorHandel = require("./utils/apiError")
 const globalError = require("./middlewares/errormiddlewares")
@@ -19,6 +21,8 @@ if (process.env.NODE_ENV === 'development') {
 
 // 4. Start server
 app.use('/api/v1/categories', categoryRoutes);
+app.use('/api/v1/subcategories', subcategoryRoutes);
+
 app.all(/.*/, (req, res, next) => {
   next( new apiErrorHandel(`Can't find ${req.originalUrl} on this server!`, 400) );
 })
