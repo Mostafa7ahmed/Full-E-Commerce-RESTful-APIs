@@ -13,7 +13,6 @@ setCategoryIdToBody = (req, res , next) => {
 
 };
 createFilterObj =  (req, res , next) => {
-  // nested Route
   let filterObj = {};
   if(req.params.categoryId) filterObj = {category : req.params.categoryId}
   req.filterObj = filterObj
@@ -29,9 +28,7 @@ const getSubCategories = asyncHandler(async (req, res) => {
   const totalCount = await subCategoryModel.countDocuments();
   const totalPages = Math.ceil(totalCount / limit);
  
-  console.log(req.params)
 
-  // Route forms ==> /api/v1/categories/:categoryId/SubCategory
   const subcategories = await subCategoryModel
     .find(
         req.filterObj
