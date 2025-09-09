@@ -5,31 +5,59 @@ const productModel = require("../Models/products.module")
 
 // Get All Products public
 const getProducts = asyncHandler(async (req, res) => {
-  const page = Number(req.query.page) || 1;
-  const limit = Number(req.query.limit) || 8;
-  const skip = (page - 1) * limit;
+ 
 
+  // 1 ) filter by 
+  const queryStringObj= {...req.query};
+  const executeFileds = ['pageIndex', 'pageSize', 'sort', 'fields','pagesiz' ]
+  executeFileds.forEach((field)=> delete queryStringObj[field])
+  let queryStr = JSON.stringify(queryStringObj);
+  queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
+  let queryObj = JSON.parse(queryStr);
+  const fixedQueryObj = {};
+  for (let key in queryObj) {
+    if (key.includes('[')) {
+      const [field, operator] = key.split('['); 
+      const cleanOperator = operator.replace(']', ''); 
+      if (!fixedQueryObj[field]) fixedQueryObj[field] = {};
+      fixedQueryObj[field][cleanOperator] = Number(queryObj[key]);
+    } else {
+      fixedQueryObj[key] = queryObj[key];
+    }
+  }
+
+ // 2 ) pagination
+  const pageIndex = Number(req.query.pageIndex) || 1;
+  const pageSize = Number(req.query.pageSize) || 50;
+  const skip = (pageIndex - 1) * pageSize;
   const totalCount = await productModel.countDocuments();
-  const totalPages = Math.ceil(totalCount / limit);
+  const totalPages = Math.ceil(totalCount / pageSize);
 
-  const products = await productModel
-    .find({})
+
+  // 3 ) Sort
+
+  // Build Query
+  const mongooseQuery = productModel
+    .find(fixedQueryObj)
     .skip(skip)
-    .limit(limit)
+    .limit(pageSize)
     .sort({ createdAt: -1 })
     .populate({
       path: "category",
       select: "name",
-    })
-    ;
+    });
+
+    // Execute Query
+    const products = await mongooseQuery
+
 
   return sendResponse(res, 200, "Products fetched successfully", products, {
-    pageIndex: page,
-    pageSize: limit,
+    pageIndex: pageIndex,
+    pageSize: pageSize,
     totalCount,
     totalPages,
-    moveNext: page < totalPages,
-    movePrevious: page > 1,
+    moveNext: pageIndex < totalPages,
+    movePrevious: pageIndex > 1,
   });
 
 });
